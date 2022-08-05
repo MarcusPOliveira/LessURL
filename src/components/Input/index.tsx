@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { TextInputProps } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Feather } from '@expo/vector-icons';
 
 import {
   Container,
   IconContainer,
   InputText,
+  Clear,
 } from './styles';
 
 type Props = TextInputProps & {
   iconName: React.ComponentProps<typeof MaterialIcons>['name'];
   value?: string;
+  onClear: () => void;
 }
 
-export function Input({ iconName, value, ...rest }: Props) {
+export function Input({ iconName, value, onClear, ...rest }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
 
@@ -42,6 +44,9 @@ export function Input({ iconName, value, ...rest }: Props) {
         value={value}
         {...rest}
       />
+      <Clear onPress={onClear}>
+        <Feather name="x" size={16} color="#E83F5B" />
+      </Clear>
     </Container>
   );
 }

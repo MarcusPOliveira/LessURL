@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Alert, Keyboard, StatusBar, TouchableWithoutFeedback } from 'react-native';
+import { Alert, Keyboard, StatusBar, ToastAndroid, TouchableWithoutFeedback } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 import scissorsImg from '../../assets/scissors.png';
 import { Button } from '../../components/Button';
@@ -20,31 +21,54 @@ import {
 export function Home() {
   const [myurl, setUrl] = useState('');
   const [name, setName] = useState('');
+  const [cuttedUrl, setCuttedUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleClearInput() {
+    setUrl('');
+    setName('');
+  }
 
   async function handleShortenURL() {
+    setIsLoading(true);
     if (myurl.includes('https://') || myurl.includes('http://')) {
       const response = await api.get(`/api.php?key=b0a4399c0587a0a054f9d593c5079688a8fbc&short=${myurl}&name=${name}`);
       console.log(response.data);
       const { url } = response.data;
-      console.log(url);
-      if (url.status === 2) {
-        Alert.alert('Opa,', 'Insira um link válido!');
-      }
-      if (url.status === 3) {
-        Alert.alert('Opa,', 'Esse nome já existe!');
-      }
-      if (url.status === 4) {
-        Alert.alert('Opa,', 'A chave da API é inválida!');
-      }
-      if (url.status === 5) {
-        Alert.alert('Opa,', 'Substitua os caractéres inválidos da URL!');
-      }
-      if (url.status === 6) {
-        Alert.alert('Opa,', 'A URL informada corresponde a um domínio bloqueado!');
+      switch (url.status) {
+        case 2:
+          Alert.alert('Opa,', 'Insira um link válido!');
+          break;
+        case 3:
+          Alert.alert('Opa,', 'Esse nome já existe!');
+          break;
+        case 4:
+          Alert.alert('Opa,', 'A chave da API é inválida!');
+          break;
+        case 5:
+          Alert.alert('Opa,', 'Substitua os caractéres inválidos da URL!');
+          break;
+        case 6:
+          Alert.alert('Opa,', 'A URL informada corresponde a um domínio bloqueado!');
+          break;
+        case 7:
+          ToastAndroid.show('URL encurtada com sucesso!', ToastAndroid.LONG);
+          setCuttedUrl(response.data.url.shortLink);
+          setUrl('');
+          setName('');
+          Keyboard.dismiss();
+          break;
+        default:
       }
     } else {
-      return Alert.alert('Erro', 'Sua URL precisa conter "https://" ou "http://"');
+      Alert.alert('Erro', 'Sua URL precisa conter "https://" ou "http://"');
     }
+    setIsLoading(false);
+  }
+
+  function copyUrl() {
+    Clipboard.setString(cuttedUrl);
+    return ToastAndroid.show('Copiado para área de transferência!', ToastAndroid.LONG);
   }
 
   return (
@@ -63,6 +87,7 @@ export function Home() {
             iconName='content-cut'
             onChangeText={setUrl}
             value={myurl}
+            onClear={handleClearInput}
             placeholder="Digite a URL desejada..."
           />
           <FormTitle>Nome personalizado</FormTitle>
@@ -70,13 +95,15 @@ export function Home() {
             iconName='drive-file-rename-outline'
             onChangeText={setName}
             value={name}
+            onClear={handleClearInput}
             placeholder="Digite o nome para personalizar a URL..."
           />
           <Button
             onPress={handleShortenURL}
+            isLoading={isLoading}
           />
-          <ResultContent>
-            <URL> URL encurtado </URL>
+          <ResultContent onPress={cuttedUrl ? copyUrl : () => { }}>
+            <URL> {cuttedUrl} </URL>
           </ResultContent>
         </Forms>
       </Container>

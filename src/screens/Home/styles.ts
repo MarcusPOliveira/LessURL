@@ -34,7 +34,7 @@ export const Subtitle = styled.Text`
 export const Forms = styled.View`
   width: 100%;
   height: 60%;
-  padding: 50px 20px;
+  padding: 30px 20px;
 `;
 
 export const FormTitle = styled.Text`
@@ -45,7 +45,7 @@ export const FormTitle = styled.Text`
   color: #FFF;
 `;
 
-export const ResultContent = styled.View`
+export const ResultContent = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   height: 70px;
@@ -58,4 +58,3 @@ export const URL = styled.Text`
   font-size: 22px;
   color: #FFF;
 `;
-

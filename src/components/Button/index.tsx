@@ -1,17 +1,22 @@
 import React from 'react';
-import { TouchableOpacityProps } from 'react-native';
+import { ActivityIndicator, TouchableOpacityProps } from 'react-native';
 
 import {
   Container,
   Title
 } from './styles';
 
-type Props = TouchableOpacityProps & {};
+type Props = TouchableOpacityProps & {
+  isLoading: boolean;
+};
 
-export function Button({ ...rest }: Props) {
+export function Button({ isLoading = false, ...rest }: Props) {
   return (
     <Container {...rest}>
-      <Title>Encurtar</Title>
+      {
+        isLoading ? <ActivityIndicator color='#FFF' /> : <Title>Encurtar</Title>
+      }
+
     </Container>
   );
 }
